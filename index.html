@@ -6,9 +6,9 @@
 <title>Kapas Hisaab</title>
 <meta name="theme-color" content="#0f4c35">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<script src="firebase-config.js"></script>
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script>document.write('<script src="firebase-config.js?v='+Date.now()+'"><\/script>')</script>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 --bg:#f5f4ef;--card:#fff;--ink:#14231b;--mute:#6b7a71;--line:#e4e2d8;--green:#0f4c35;--gold:#b8892b;--red:#b3392f;--soft:#eaf1ec;--gb:#0f4c35;--gd:#a87d22;--rb:#b3392f}
@@ -200,7 +200,8 @@ try{var r=localStorage.getItem(KEY);if(r)S=norm(JSON.parse(r))}catch(e){}
 function ls(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function save(){S.ts=Date.now();ls();if(cloud.doc){cloud.st="sync";setCl();clearTimeout(cloud.t);cloud.t=setTimeout(push,800)}}
 async function push(){if(!cloud.doc)return false;try{await Promise.race([cloud.doc.set({json:JSON.stringify(S),ts:S.ts}),new Promise(function(_,no){setTimeout(function(){no(new Error("timeout"))},20000)})]);cloud.st="ok";cloud.last=new Date();setCl();return true}catch(e){cloud.st="err";setCl();return false}}
-var MODE="local",user=null,auth=null;
+var MODE="",user=null,auth=null,DIAG={sdk:"nahi",err:""};
+function cfgState(){var c=window.FIREBASE_CONFIG;if(typeof c==="undefined")return "firebase-config.js load nahi hui ya usmein galti hai (quote ya comma check karein)";if(!c||!c.apiKey||String(c.apiKey).indexOf("YOUR")>=0)return "apiKey abhi bhi YOUR_... hai";if(!c.projectId||String(c.projectId).indexOf("YOUR")>=0)return "projectId abhi bhi YOUR_... hai";return "theek hai"}
 async function attach(doc){cloud.doc=doc;try{var sn=await doc.get();if(sn.exists){var cs=norm(JSON.parse(sn.data().json));if(cs.ts>S.ts){S=cs;ls();cloud.st="ok";cloud.last=new Date();setCl();render();return}}await push()}catch(e){cloud.st="err"}setCl();render()}
 async function initCloud(){
 try{
@@ -248,10 +249,11 @@ return (q?"":'<div class="sl">Aaj baqi naam (dabayein):</div>')+L.map(function(n
 function onName(el){document.getElementById("sug").innerHTML=sugH(el.value)}
 function pick(i){document.getElementById("n").value=sugL[i];document.getElementById("sug").innerHTML="";document.getElementById("k").focus()}
 function kbtn(t,id){return '<button class="kb" aria-label="Options" onclick="menu(\''+t+'\','+id+')">'+ic("more",20)+'</button>'}
+function bannerH(){return MODE==="local"?'<div class="card set" style="border-color:var(--gd)"><p style="color:var(--ink)"><b>Login aur cloud backup abhi chalu nahi.</b> Settings tab mein neeche "Setup ki halat" dekhein.</p></div>':""}
 function entryV(){
 var es=S.entries.filter(function(e){return e.date===day}),tot=es.reduce(function(a,e){return a+e.kg},0);
 var list=es.length?es.map(function(e){return '<div class="item'+(e.id===flashId?" flash":"")+'"><div class="who">'+av(e.name)+'<div class="n">'+esc(e.name)+'</div></div><div class="rt"><span class="num">'+fmt(e.kg)+' kg</span>'+kbtn("e",e.id)+'</div></div>'}).join(""):'<div class="empty">Aaj ki koi entry nahi. Upar naam aur wazan likhein.</div>';
-return '<div class="card"><h2>Nayi entry</h2><label>Tareekh</label><input type="date" id="d" value="'+day+'" onchange="day=this.value;render()"><label>Naam</label><input id="n" placeholder="Mazdoor ka naam" autocomplete="off" oninput="onName(this)" onkeydown="if(event.key===\'Enter\')document.getElementById(\'k\').focus()"><div id="sug">'+sugH("")+'</div><label>Wazan (kg)</label><input id="k" type="number" inputmode="decimal" step="0.1" placeholder="0.0" onkeydown="if(event.key===\'Enter\')addE()"><button class="btn" onclick="addE()">'+ic("plus",20)+'Entry add karein</button></div>'
+return bannerH()+'<div class="card"><h2>Nayi entry</h2><label>Tareekh</label><input type="date" id="d" value="'+day+'" onchange="day=this.value;render()"><label>Naam</label><input id="n" placeholder="Mazdoor ka naam" autocomplete="off" oninput="onName(this)" onkeydown="if(event.key===\'Enter\')document.getElementById(\'k\').focus()"><div id="sug">'+sugH("")+'</div><label>Wazan (kg)</label><input id="k" type="number" inputmode="decimal" step="0.1" placeholder="0.0" onkeydown="if(event.key===\'Enter\')addE()"><button class="btn" onclick="addE()">'+ic("plus",20)+'Entry add karein</button></div>'
 +'<div class="card"><h2>'+fdate(day)+' ka wazan</h2>'+list+'<div class="tot"><span>Aaj ka kul kapas</span><span>'+wt(tot)+'</span></div></div>';
 }
 function wlist(){var ws=workers(),q=q2.trim().toLowerCase(),h="";
@@ -329,7 +331,7 @@ function setR(x){var r=parseFloat(x)/40;if(r>0){snap();S.rate=r;save();render()}
 function ren(i){cur=workers()[i].name;mo('<h2>Naam badlein</h2><p>Agar naya naam kisi aur ka hai to dono ka hisaab jama ho jayega.</p><input id="rN" value="'+esc(cur)+'" onkeydown="if(event.key===\'Enter\')doRen()"><button class="btn" onclick="doRen()">'+ic("check",20)+'Save karein</button><button class="btn line" onclick="cm()">Band karein</button>')}
 function doRen(){var nn=document.getElementById("rN").value.trim();if(!nn)return;nn=fixN(nn);var o=cur;if(nn===o){cm();return}
 snap();S.entries.concat(S.pays).forEach(function(x){if(x.name===o)x.name=nn});open=nn;save();cm();render();toast("Naam badal gaya")}
-function loadJs(u){return new Promise(function(ok,no){var e=document.createElement("script");e.src=u;e.onload=ok;e.onerror=function(){no(new Error("load"))};document.head.appendChild(e)})}
+function loadJs(u){return new Promise(function(ok,no){var e=document.createElement("script");e.src=u;e.onload=ok;e.onerror=function(){no(new Error("load "+u.split("/").pop()))};document.head.appendChild(e)})}
 async function libs(){if(!window.html2canvas)await loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");if(!(window.jspdf&&window.jspdf.jsPDF))await loadJs("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")}
 function mn(kg){var m=Math.floor(kg/40+1e-9),r=Math.round((kg-m*40)*100)/100;return m+" man"+(r?" "+fmt(r)+" kg":"")}
 function pgH(body,n,tot){return '<div class="pg" style="position:relative;width:794px;height:1123px;padding:44px 44px 0;background:#fff;color:#14231b;font-family:Segoe UI,Noto Sans,Arial,sans-serif;overflow:hidden;box-sizing:border-box">'+body+'<div style="position:absolute;left:44px;right:44px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#6b7a71;border-top:1px solid #e4e2d8;padding-top:8px"><span>Kapas Hisaab · '+new Date().toLocaleDateString("en-GB")+'</span><span>Safha '+n+' / '+tot+'</span></div></div>'}
@@ -395,6 +397,8 @@ function setTh(t){S.theme=t;save();render()}
 function resetStock(){yn("Stock zero kar dein? Mazdoori ka hisaab nahi badlega.","Haan, stock zero",function(){snap();S.sb=totals().kg;S.sbd=today();save();render();toast("Stock zero ho gaya. Undo se wapas aa sakta hai")})}
 function clearReset(){snap();S.sb=0;S.sbd="";save();render();toast("Poora stock wapas dikh raha hai")}
 function resetAll(){yn("Poora data saaf kar dein?","Haan",function(){yn("Pakka? Saari entries aur payments mit jayengi.","Haan, pakka",function(){snap();S.entries=[];S.pays=[];S.sb=0;S.sbd="";save();render();toast("Data saaf. Undo se wapas aa sakta hai")})})}
+function diagV(){var c=window.FIREBASE_CONFIG||{},m={claude:"Claude",fb:"Firebase login",local:"Sirf is phone mein (login nahi)"}[MODE]||"-";
+return '<div class="card set"><h2>Setup ki halat</h2><p>Version: v4</p><p>Mode: '+m+'</p><p>Config: '+esc(cfgState())+'</p><p>Project: '+esc(c.projectId||"-")+'</p><p>Website: '+esc(location.hostname)+'</p><p>Firebase SDK: '+DIAG.sdk+'</p><p>Login: '+(user?esc(user.email||"hai"):"nahi")+'</p>'+(DIAG.err?'<p>Aakhri error: '+esc(DIAG.err)+'</p>':"")+'</div>'}
 function bkV(){var t=totals(),ok=cloud.st==="ok"||cloud.st==="sync",
 msg=ok?(MODE==="fb"?"Aap ke Google account se jura hua data cloud mein mehfooz hai":"Data cloud mein mehfooz hai")+(cloud.last?" (aakhri backup "+cloud.last.toLocaleTimeString()+")":"")+". Har tabdeeli ke baad khud backup hota hai.":cloud.st==="off"?(MODE==="local"?"Cloud backup abhi setup nahi hua. Setup guide ke mutabiq firebase-config.js mein apni details bharein. Tab tak file backup lein.":"Cloud backup band hai. Claude mein sign in karke link dobara kholein aur Allow dabayein. Tab tak file backup lein."):cloud.st==="err"?"Cloud backup nahi hua. Internet check karein aur neeche button dabayein.":"Cloud check ho raha hai.";
 var th=[["auto","Auto","monitor"],["light","Light","sun"],["dark","Dark","moon"]].map(function(x){return '<button class="chip'+(S.theme===x[0]?" on":"")+'" onclick="setTh(\''+x[0]+'\')">'+ic(x[2],16)+x[1]+'</button>'}).join("");
@@ -404,7 +408,7 @@ return acc+'<div class="card"><h2>Theme</h2>'+th+'</div>'
 +'<div class="card set"><h2>Stock reset</h2><p>Abhi stock: <b style="color:var(--ink)">'+wt(Math.max(0,t.kg-S.sb))+'</b></p>'+(S.sb>0?'<p>Reset ('+fdate(S.sbd||today())+') se pehle ka wazan: '+wt(S.sb)+'. Mazdoori ka hisaab poore wazan par hai.</p>':'')+'<button class="btn alt" onclick="resetStock()">'+ic("reset",20)+'Stock zero karein</button>'+(S.sb>0?'<button class="btn line" onclick="clearReset()">Reset hata dein, poora stock dikhayein</button>':'')+'</div>'
 +'<div class="card set"><h2>Cloud backup</h2><p>'+msg+'</p><button class="btn alt" onclick="doPush()">'+ic("up",20)+'Abhi cloud mein backup karein</button><button class="btn line" onclick="fromCloud()">'+ic("down",20)+'Cloud se data wapas layein</button></div>'
 +'<div class="card set"><h2>File backup</h2><p>Hafte mein ek baar file download kar ke WhatsApp par apne aap ko bhej dein.</p><button class="btn" onclick="dl()">'+ic("down",20)+'Backup file download karein</button><label>Backup file se restore</label><input type="file" accept=".json,application/json" onchange="restore(this)"></div>'
-+'<div class="card"><h2>Khatarnak hissa</h2><button class="btn red" style="margin-top:0" onclick="resetAll()">'+ic("trash",20)+'Poora data saaf karein</button></div>';
++diagV()+'<div class="card"><h2>Khatarnak hissa</h2><button class="btn red" style="margin-top:0" onclick="resetAll()">'+ic("trash",20)+'Poora data saaf karein</button></div>';
 }
 document.getElementById("nav").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t){tab=b.dataset.t;open=null;render();swap();window.scrollTo(0,0)}};
 document.getElementById("seg").onclick=function(e){var u=e.target.dataset.u;if(u){S.unit=u;ls();render()}};
@@ -413,11 +417,12 @@ function haveCfg(){var c=window.FIREBASE_CONFIG;return !!(c&&c.apiKey&&c.project
 function hideSplash(){var e=document.getElementById("splash");if(!e)return;e.classList.add("out");setTimeout(function(){e.remove()},400)}
 function showLogin(m){document.getElementById("login").style.display="flex";document.getElementById("lMsg").textContent=m||"";document.getElementById("gBtn").disabled=false}
 function hideLogin(){document.getElementById("login").style.display="none"}
-function errMsg(e){var c=(e&&e.code)||"";if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return "Login band ho gaya. Dobara koshish karein.";if(c==="auth/network-request-failed")return "Internet check karein aur dobara koshish karein.";if(c==="auth/unauthorized-domain")return "Ye website Firebase ki Authorized domains mein shamil nahi. Setup guide dekhein.";return "Login nahi hua"+(c?" ("+c+")":"")+". Dobara koshish karein."}
-async function gLogin(){var b=document.getElementById("gBtn"),p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});b.disabled=true;document.getElementById("lMsg").textContent="";
+function errMsg(e){var c=(e&&e.code)||"";if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return "Login band ho gaya. Dobara koshish karein.";if(c==="auth/network-request-failed")return "Internet check karein aur dobara koshish karein.";if(c==="auth/unauthorized-domain")return "Ye website Firebase ki Authorized domains mein shamil nahi. Setup guide dekhein.";return "Login nahi hua. Dobara koshish karein. ["+(c||(e&&e.name)||"error")+(e&&e.message?": "+String(e.message).slice(0,140):"")+"]"}
+async function gLogin(){var b=document.getElementById("gBtn");if(!auth||!window.firebase||!firebase.auth){DIAG.err="auth ready nahi, sdk="+DIAG.sdk;showLogin("Firebase load nahi hua ("+(DIAG.err||"-")+"). Page dobara kholein ya normal (non-incognito) tab mein koshish karein.");return}
+var p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});b.disabled=true;document.getElementById("lMsg").textContent="";
 try{await auth.signInWithPopup(p)}catch(e){
 if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"){try{await auth.signInWithRedirect(p);return}catch(x){e=x}}
-showLogin(errMsg(e))}
+DIAG.err=(e&&e.code)||String(e);showLogin(errMsg(e))}
 b.disabled=false}
 function startUser(u){var prev=null;try{prev=localStorage.getItem("kapas_uid")}catch(e){}
 if(prev&&prev!==u.uid){S=norm({});ls()}
@@ -434,20 +439,20 @@ document.getElementById("spArt").innerHTML=sprigSvg();document.getElementById("l
 await new Promise(function(r){setTimeout(r,0)});
 var fin=false;function done(){if(fin)return;fin=true;setTimeout(hideSplash,Math.max(0,900-(Date.now()-t0)))}
 if(window.claude){MODE="claude";done();initCloud();return}
-if(!haveCfg()){MODE="local";cloud.st="off";setCl();done();return}
+if(!haveCfg()){MODE="local";cloud.st="off";setCl();render();done();return}
 MODE="fb";
 var known=false;try{known=!!localStorage.getItem("kapas_uid")}catch(e){}
 window.addEventListener("online",function(){if(cloud.doc)push()});
 setTimeout(function(){if(!fin){if(known){cloud.st="err";setCl()}else showLogin("Internet nahi mila. Pehli dafa login ke liye internet chahiye.");done()}},9000);
 try{
 var base="https://www.gstatic.com/firebasejs/10.12.2/";
-await loadJs(base+"firebase-app-compat.js");await loadJs(base+"firebase-auth-compat.js");await loadJs(base+"firebase-firestore-compat.js");
+await loadJs(base+"firebase-app-compat.js");await loadJs(base+"firebase-auth-compat.js");await loadJs(base+"firebase-firestore-compat.js");DIAG.sdk="load hua";
 var cfg=Object.assign({},window.FIREBASE_CONFIG);
 if(/\.(web\.app|firebaseapp\.com)$/.test(location.hostname))cfg.authDomain=location.hostname;
 firebase.initializeApp(cfg);auth=firebase.auth();
 auth.getRedirectResult().catch(function(e){showLogin(errMsg(e))});
 auth.onAuthStateChanged(function(u){fin=false;if(u){user=u;hideLogin();startUser(u)}else{user=null;cloud.doc=null;cloud.st="off";setCl();showLogin("")}done();if(tab==="bk")render()});
-}catch(e){if(known){cloud.st="err";setCl()}else showLogin("Internet nahi mila. Pehli dafa login ke liye internet chahiye.");done()}
+}catch(e){DIAG.err=String(e&&e.message||e);if(known){cloud.st="err";setCl()}else showLogin("Firebase load nahi hua ("+DIAG.err+"). Internet check karein ya normal (non-incognito) tab mein kholein.");done()}
 }
 render();
 boot();
