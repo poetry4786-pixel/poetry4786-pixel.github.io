@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ur-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kapas Hisaab</title>
+<meta name="theme-color" content="#0f4c35">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<script src="firebase-config.js"></script>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f5f4ef;--card:#fff;--ink:#14231b;--mute:#6b7a71;--line:#e4e2d8;--green:#0f4c35;--gold:#b8892b;--red:#b3392f;--soft:#eaf1ec;--gb:#0f4c35;--gd:#a87d22;--rb:#b3392f}
+:root[data-theme="dark"]{--bg:#0d1511;--card:#16211b;--ink:#eef3ef;--mute:#92a399;--line:#263429;--green:#3fae82;--gold:#d9a94a;--red:#e2685d;--soft:#1b2a22;--gb:#2a7f5d;--gd:#8f6a1a;--rb:#c4473c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1511;--card:#16211b;--ink:#eef3ef;--mute:#92a399;--line:#263429;--green:#3fae82;--gold:#d9a94a;--red:#e2685d;--soft:#1b2a22;--gb:#2a7f5d;--gd:#8f6a1a;--rb:#c4473c}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans","Noto Naskh Arabic",sans-serif;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 90px}
+.ic{flex:none}
+header{background:#0f4c35;color:#fff;border-radius:18px;padding:18px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex:none}
+header h1{margin:0;font-size:19px;font-weight:700;line-height:1.2}
+header .sub{opacity:.75;font-size:12.5px}
+.hero{display:flex;gap:10px;margin-top:16px}
+.hero div{flex:1;background:rgba(255,255,255,.12);border-radius:12px;padding:10px 12px}
+.hero b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.hero span{font-size:12px;opacity:.8}
+.hero .g b{color:#f1cf85}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px}
+.seg{display:flex;background:rgba(255,255,255,.14);border-radius:10px;padding:3px}
+.seg button{border:0;background:none;color:#fff;opacity:.7;padding:7px 14px;border-radius:8px;font:inherit;font-weight:700;font-size:13px}
+.seg button.on{background:#fff;color:#0f4c35;opacity:1}
+#cloud{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#fff;background:rgba(255,255,255,.12);border:0;border-radius:10px;padding:8px 10px;font-family:inherit}
+.ur{display:flex;gap:8px;margin-top:10px}
+.ur button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:10px;padding:9px;background:rgba(255,255,255,.14);color:#fff;font:inherit;font-weight:600;font-size:13px}
+.ur button:disabled{opacity:.4}
+nav{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:14px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mute);padding:8px 2px;border-radius:10px;font:inherit;font-weight:600;font-size:12px}
+nav button.on{background:var(--gb);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(15,76,53,.07)}
+h2{font-size:16px;margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+input{width:100%;font:inherit;font-size:17px;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;background:var(--gd);color:#fff;font:inherit;font-weight:700;font-size:16px}
+.btn.alt{background:var(--gb)}
+.btn.red{background:var(--rb)}
+.btn.line{background:none;border:1px solid var(--line);color:var(--ink)}
+.item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);gap:8px}
+.item:first-of-type{border-top:0}
+.item .n{font-weight:600}.item small{color:var(--mute);display:block}
+.rt{display:flex;align-items:center;gap:6px}
+.num{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.kb{border:0;background:none;color:var(--mute);width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.kb:active{background:var(--soft)}
+.tot{display:flex;justify-content:space-between;padding:12px;background:var(--soft);border-radius:10px;margin-top:10px;font-weight:700}
+.pos{color:var(--red)}.ok{color:var(--green)}
+.empty{color:var(--mute);text-align:center;padding:18px 0;font-size:14px}
+.worker{cursor:pointer}
+.det{background:var(--soft);border-radius:12px;padding:12px;margin:0 0 10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stats div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.stats b{display:block;font-size:21px;font-variant-numeric:tabular-nums}.stats span{font-size:12px;color:var(--mute)}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:9px 15px;margin:8px 8px 0 0;font:inherit;font-size:15px;font-weight:600}
+.chip.on{background:var(--gb);color:#fff;border-color:var(--gb)}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.mb{background:var(--card);width:100%;max-width:720px;max-height:92%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+.mb p{margin:0 0 8px;color:var(--mute);font-size:14px}
+.act{display:flex;align-items:center;gap:14px;width:100%;padding:14px 10px;border:0;background:none;color:var(--ink);font:inherit;font-size:16px;border-radius:12px;text-align:left}
+.act:active{background:var(--soft)}
+.act.red{color:var(--red)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:#14231b;color:#fff;padding:12px 18px;border-radius:12px;z-index:30;font-size:14px;max-width:90%;text-align:center}
+.av{width:38px;height:38px;border-radius:50%;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.who{display:flex;align-items:center;gap:10px;min-width:0}
+.sh{font-size:13px;margin:14px 0 4px;color:var(--mute);font-weight:700}
+.lr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 0 2px 2px;border-bottom:1px dashed var(--line);font-size:14px}
+.lr span{flex:1}
+.sl{font-size:12px;color:var(--mute);margin-top:8px}
+.sr{position:relative;margin-bottom:12px}
+.sr .ic{position:absolute;left:12px;top:50%;margin-top:-9px;color:var(--mute)}
+.sr input{padding-left:40px;font-size:15px}
+.det .btn{font-size:14px;padding:12px 8px;gap:6px}
+.set p{margin:0 0 4px;font-size:14px;color:var(--mute)}
+#splash,#login{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#splash{background:#0f4c35;color:#fff;transition:opacity .35s}
+#splash.out{opacity:0;pointer-events:none}
+#spArt svg{width:128px;height:128px;display:block}
+#splash h1{margin:14px 0 2px;font-size:24px}
+#splash p{margin:0;opacity:.7;font-size:13px}
+.ld{width:48px;height:3px;border-radius:3px;background:rgba(255,255,255,.2);margin-top:26px;overflow:hidden}
+.ld i{display:block;width:40%;height:100%;background:#f1cf85;animation:ld 1s infinite ease-in-out}
+@keyframes ld{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+@media (prefers-reduced-motion:reduce){.ld i{animation:none}}
+#login{background:#0f4c35;display:none;overflow:auto;padding:24px}
+#lgBg{position:absolute;inset:0}
+#lgBg svg{width:100%;height:100%;display:block}
+.lc{position:relative;width:100%;max-width:380px;margin-top:62px;background:var(--card);color:var(--ink);border-radius:22px;padding:0 22px 24px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+#lgArt{width:104px;height:104px;margin:-52px auto 10px;background:#0f4c35;border-radius:50%;padding:10px;border:4px solid var(--card)}
+#lgArt svg{width:100%;height:100%;display:block}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:14px;border-radius:12px;border:1px solid #dadce0;background:#fff;color:#1f1f1f;font:inherit;font-weight:600;font-size:16px}
+.gbtn:disabled{opacity:.6}
+.lmsg{color:var(--red);font-size:13px;margin-top:12px;min-height:18px}
+@media (prefers-reduced-motion:no-preference){
+#spArt svg{animation:pop .7s cubic-bezier(.2,.9,.3,1.2) both}
+#splash h1{animation:up .5s .25s ease both}
+#splash p{animation:up .5s .4s ease both}
+.lc{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+#lgArt{animation:pop .6s .15s cubic-bezier(.2,.9,.3,1.2) both}
+#v.in{animation:up .26s ease both}
+.mo{animation:fade .2s ease both}
+.mb{animation:sheet .3s cubic-bezier(.2,.8,.2,1) both}
+.mo.out{animation:fadeo .16s ease both}
+.mo.out .mb{animation:sheeto .16s ease both}
+.mo.nr,.mo.nr .mb{animation:none}
+.toast{animation:toastin .25s cubic-bezier(.2,.9,.3,1.2) both}
+.toast.out{animation:toastout .2s ease both}
+.btn,.chip,.kb,.act,nav button,.ur button,.seg button{transition:transform .12s ease,background-color .2s ease,opacity .2s}
+.btn:active,.chip:active,.kb:active,.act:active,nav button:active{transform:scale(.96)}
+.flash{animation:flash 1.4s ease-out}
+.bump{animation:bump .35s ease}
+.det{animation:open .22s ease both}
+}
+@keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes fadeo{to{opacity:0}}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+@keyframes sheeto{to{transform:translateY(100%)}}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,12px) scale(.92)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+@keyframes toastout{to{opacity:0;transform:translate(-50%,8px)}}
+@keyframes flash{from{background:var(--soft);box-shadow:0 0 0 6px var(--soft)}to{background:transparent;box-shadow:0 0 0 6px transparent}}
+@keyframes bump{50%{transform:scale(1.07)}}
+@keyframes open{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="splash"><div id="spArt"></div><h1>Kapas Hisaab</h1><p>Roz ka wazan, stock aur mazdoori</p><div class="ld"><i></i></div></div>
+<div id="login"><div id="lgBg"></div><div class="lc"><div id="lgArt"></div><h2 style="font-size:22px;margin:0 0 6px">Kapas Hisaab</h2><p style="margin:0 0 20px;color:var(--mute);font-size:14px">Apna hisaab har phone par mehfooz rakhne ke liye login karein.</p><button class="gbtn" id="gBtn" onclick="gLogin()"><svg width="20" height="20" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.4673-.806 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.5831-5.036-3.7104H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2823-1.71V4.9582H.9573A8.9965 8.9965 0 0 0 0 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z"/><path fill="#EA4335" d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.426 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1627 6.656 3.5795 9 3.5795z"/></svg><span>Google se login karein</span></button><div class="lmsg" id="lMsg" role="alert"></div><p style="margin:10px 0 0;color:var(--mute);font-size:12px">Ek dafa login karne ke baad app dobara login nahi maangegi.</p></div></div>
+<div class="wrap">
+<header>
+<div class="brand"><div class="logo" id="logo"></div><div><h1>Kapas Hisaab</h1><div class="sub">Roz ka wazan, stock aur mazdoori</div></div></div>
+<div class="hero"><div class="g"><b id="hStock">0</b><span>Kul stock</span></div><div><b id="hBal">Rs 0</b><span>Kul baqi dena</span></div></div>
+<div class="bar"><div class="seg" id="seg"><button data-u="kg">KG</button><button data-u="man">MAN</button></div><button id="cloud"></button></div>
+<div class="ur"><button id="bUndo" onclick="undo()"></button><button id="bRedo" onclick="redo()"></button></div>
+</header>
+<nav id="nav"></nav>
+<div id="v"></div>
+</div>
+<script>
+var I={
+leaf:'<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>',
+undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5 5.5 5.5 0 0 1-5.5 5.5H11"/>',
+redo:'<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5 5.5 5.5 0 0 0 9.5 20H13"/>',
+gear:'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+more:'<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
+pencil:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+trash:'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+file:'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>',
+cloudok:'<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="m9.5 13 2 2 3.5-3.5"/>',
+alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+sync:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+plus:'<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/>',
+wallet:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+down:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+up:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
+search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+cal:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+cash:'<rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+scale:'<path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/>',
+check:'<path d="M20 6 9 17l-5-5"/>',
+reset:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+chd:'<path d="m6 9 6 6 6-6"/>',
+chu:'<path d="m18 15-6-6-6 6"/>',
+out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>'};
+function ic(n,s){s=s||18;return '<svg class="ic" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+I[n]+'</svg>'}
+function bollG(){return '<g><g fill="#6b4b35"><ellipse cx="-17" cy="12" rx="8" ry="17" transform="rotate(-55 -17 12)"/><ellipse cx="17" cy="12" rx="8" ry="17" transform="rotate(55 17 12)"/><ellipse cx="-7" cy="16" rx="7" ry="16" transform="rotate(-18 -7 16)"/><ellipse cx="7" cy="16" rx="7" ry="16" transform="rotate(18 7 16)"/></g>'
++'<g fill="#fff" stroke="#d5ddd2" stroke-width="1.2"><circle cx="-18" cy="-8" r="13"/><circle cx="18" cy="-8" r="13"/><circle cx="0" cy="-22" r="15"/><circle cx="-9" cy="-3" r="15"/><circle cx="9" cy="-3" r="15"/><circle cx="0" cy="4" r="12"/></g>'
++'<g fill="none" stroke="#e3e9e0" stroke-width="1.4" stroke-linecap="round"><path d="M-12 -14q4 4 9 1"/><path d="M4 -16q5 3 9 0"/><path d="M-4 0q5 3 9 0"/></g></g>'}
+function sprigSvg(){return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#3e7a4f" stroke-width="5" stroke-linecap="round"><path d="M100 196C100 160 97 128 100 92"/><path d="M99 140C118 132 134 116 142 98"/><path d="M99 118C82 110 68 98 60 82"/></g>'
++'<path d="M101 168C122 160 138 164 150 176C132 184 114 182 101 168Z" fill="#4f9a62"/><path d="M99 160C80 152 64 156 52 168C70 176 88 174 99 160Z" fill="#4f9a62"/>'
++'<g transform="translate(100 72) scale(.78)">'+bollG()+'</g><g transform="translate(143 84) scale(.58) rotate(14)">'+bollG()+'</g><g transform="translate(58 70) scale(.54) rotate(-14)">'+bollG()+'</g></svg>'}
+function fieldSvg(){var o='',s=7;function r(){s=(s*9301+49297)%233280;return s/233280}
+for(var i=0;i<46;i++){var x=r()*400,y=60+r()*560,k=.35+r()*.6;o+='<g opacity="'+(.10+r()*.22).toFixed(2)+'" transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+') scale('+k.toFixed(2)+') rotate('+((r()*40-20)|0)+')">'+bollG()+'</g>'}
+return '<svg viewBox="0 0 400 640" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b3d2b"/><stop offset=".6" stop-color="#0f4c35"/><stop offset="1" stop-color="#16603f"/></linearGradient></defs><rect width="400" height="640" fill="url(#fg)"/>'+o+'</svg>'}
+
+var KEY="kapas_hisab_v1",S={rate:25,unit:"kg",ts:0,sb:0,sbd:"",theme:"auto",entries:[],pays:[]},tab="entry",open=null,day=null,sugL=[],q2="";
+var cloud={st:"wait",doc:null,t:null,last:null};
+function norm(x){x=x||{};return{rate:x.rate>0?x.rate:25,unit:x.unit==="man"?"man":"kg",ts:x.ts||0,sb:x.sb||0,sbd:x.sbd||"",theme:x.theme||"auto",entries:x.entries||[],pays:x.pays||[]}}
+try{var r=localStorage.getItem(KEY);if(r)S=norm(JSON.parse(r))}catch(e){}
+function ls(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function save(){S.ts=Date.now();ls();if(cloud.doc){cloud.st="sync";setCl();clearTimeout(cloud.t);cloud.t=setTimeout(push,800)}}
+async function push(){if(!cloud.doc)return false;try{await Promise.race([cloud.doc.set({json:JSON.stringify(S),ts:S.ts}),new Promise(function(_,no){setTimeout(function(){no(new Error("timeout"))},20000)})]);cloud.st="ok";cloud.last=new Date();setCl();return true}catch(e){cloud.st="err";setCl();return false}}
+var MODE="local",user=null,auth=null;
+async function attach(doc){cloud.doc=doc;try{var sn=await doc.get();if(sn.exists){var cs=norm(JSON.parse(sn.data().json));if(cs.ts>S.ts){S=cs;ls();cloud.st="ok";cloud.last=new Date();setCl();render();return}}await push()}catch(e){cloud.st="err"}setCl();render()}
+async function initCloud(){
+try{
+var c=await claude.use("db"),u=await claude.use("user");
+if(!c||!u){cloud.st="off";return setCl()}
+var id=await u.id();if(!id){cloud.st="off";return setCl()}
+await attach(c.collection("data/users/"+id).doc("hisaab"));return
+}catch(e){cloud.st="err"}
+setCl();render();
+}
+function setCl(){var m={wait:["sync","Check ho raha hai"],ok:["cloudok","Backup mehfooz"],sync:["sync","Backup ho raha hai"],off:["alert","Cloud backup band"],err:["alert","Backup nahi hua"]}[cloud.st];var e=document.getElementById("cloud");if(e)e.innerHTML=ic(m[0],15)+'<span>'+m[1]+'</span>'}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+day=today();
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fmt(n){return (Math.round(n*100)/100).toLocaleString("en-IN")}
+function money(n){return "Rs "+Math.round(n).toLocaleString("en-IN")}
+function wt(kg){if(S.unit==="man"){var m=Math.floor(kg/40+1e-9),r=Math.round((kg-m*40)*100)/100;return m+" man"+(r?" "+fmt(r)+" kg":"")}return fmt(kg)+" kg"}
+function fdate(d){var p=d.split("-");return p[2]+"/"+p[1]+"/"+p[0]}
+function workers(){var m={};
+S.entries.forEach(function(e){var w=m[e.name]||(m[e.name]={name:e.name,kg:0,paid:0,days:{},log:[]});w.kg+=e.kg;w.days[e.date]=1;w.log.push({d:e.date,t:"e",v:e.kg,id:e.id})});
+S.pays.forEach(function(p){var w=m[p.name]||(m[p.name]={name:p.name,kg:0,paid:0,days:{},log:[]});w.paid+=p.amt;w.log.push({d:p.date,t:"p",v:p.amt,id:p.id})});
+return Object.values(m).map(function(w){w.earn=w.kg*S.rate;w.bal=w.earn-w.paid;w.nd=Object.keys(w.days).length;w.log.sort(function(a,b){return b.d<a.d?-1:b.d>a.d?1:b.id-a.id});return w}).sort(function(a,b){return b.kg-a.kg})}
+function totals(){var ws=workers(),t={kg:0,earn:0,paid:0,bal:0};ws.forEach(function(w){t.kg+=w.kg;t.earn+=w.earn;t.paid+=w.paid;t.bal+=w.bal});return t}
+function av(n){var h=0;for(var i=0;i<n.length;i++)h=(h*31+n.charCodeAt(i))%360;return '<span class="av" style="background:hsl('+h+',45%,38%)">'+esc(n.trim().charAt(0).toUpperCase())+'</span>'}
+var TABS=[["entry","plus","Entry"],["sum","wallet","Hisaab"],["hist","clock","History"],["bk","gear","Settings"]];
+function ap(){var r=document.documentElement;if(S.theme==="auto")r.removeAttribute("data-theme");else r.setAttribute("data-theme",S.theme)}
+function setHero(id,v){var e=document.getElementById(id);if(e.textContent===v)return;var had=e.textContent!=="0"&&e.textContent!=="Rs 0";e.textContent=v;if(had){e.classList.remove("bump");void e.offsetWidth;e.classList.add("bump")}}
+function swap(){var v=document.getElementById("v");v.classList.remove("in");void v.offsetWidth;v.classList.add("in")}
+var flashId=null;
+function render(){ap();
+var t=totals();setHero("hStock",wt(Math.max(0,t.kg-S.sb)));setHero("hBal",money(t.bal));
+document.getElementById("logo").innerHTML=ic("leaf",24);
+document.getElementById("nav").innerHTML=TABS.map(function(x){return '<button data-t="'+x[0]+'" class="'+(x[0]===tab?"on":"")+'">'+ic(x[1],20)+'<span>'+x[2]+'</span></button>'}).join("");
+document.querySelectorAll("#seg button").forEach(function(b){b.className=b.dataset.u===S.unit?"on":""});
+var u=document.getElementById("bUndo"),d=document.getElementById("bRedo");
+u.innerHTML=ic("undo",16)+'<span>Undo</span>';d.innerHTML=ic("redo",16)+'<span>Redo</span>';u.disabled=!stk.length;d.disabled=!rdo.length;
+setCl();
+document.getElementById("v").innerHTML=tab==="entry"?entryV():tab==="sum"?sumV(t):tab==="hist"?histV():bkV();
+}
+function sugH(q){q=q.trim().toLowerCase();var ws=workers().map(function(w){return w.name}),L;
+if(q){L=ws.filter(function(n){return n.toLowerCase().indexOf(q)===0}).concat(ws.filter(function(n){return n.toLowerCase().indexOf(q)>0})).slice(0,6)}
+else{var dn={};S.entries.forEach(function(e){if(e.date===day)dn[e.name]=1});L=ws.filter(function(n){return !dn[n]}).slice(0,10)}
+sugL=L;if(!L.length)return "";
+return (q?"":'<div class="sl">Aaj baqi naam (dabayein):</div>')+L.map(function(n,i){return '<button class="chip" onclick="pick('+i+')">'+esc(n)+'</button>'}).join("")}
+function onName(el){document.getElementById("sug").innerHTML=sugH(el.value)}
+function pick(i){document.getElementById("n").value=sugL[i];document.getElementById("sug").innerHTML="";document.getElementById("k").focus()}
+function kbtn(t,id){return '<button class="kb" aria-label="Options" onclick="menu(\''+t+'\','+id+')">'+ic("more",20)+'</button>'}
+function entryV(){
+var es=S.entries.filter(function(e){return e.date===day}),tot=es.reduce(function(a,e){return a+e.kg},0);
+var list=es.length?es.map(function(e){return '<div class="item'+(e.id===flashId?" flash":"")+'"><div class="who">'+av(e.name)+'<div class="n">'+esc(e.name)+'</div></div><div class="rt"><span class="num">'+fmt(e.kg)+' kg</span>'+kbtn("e",e.id)+'</div></div>'}).join(""):'<div class="empty">Aaj ki koi entry nahi. Upar naam aur wazan likhein.</div>';
+return '<div class="card"><h2>Nayi entry</h2><label>Tareekh</label><input type="date" id="d" value="'+day+'" onchange="day=this.value;render()"><label>Naam</label><input id="n" placeholder="Mazdoor ka naam" autocomplete="off" oninput="onName(this)" onkeydown="if(event.key===\'Enter\')document.getElementById(\'k\').focus()"><div id="sug">'+sugH("")+'</div><label>Wazan (kg)</label><input id="k" type="number" inputmode="decimal" step="0.1" placeholder="0.0" onkeydown="if(event.key===\'Enter\')addE()"><button class="btn" onclick="addE()">'+ic("plus",20)+'Entry add karein</button></div>'
++'<div class="card"><h2>'+fdate(day)+' ka wazan</h2>'+list+'<div class="tot"><span>Aaj ka kul kapas</span><span>'+wt(tot)+'</span></div></div>';
+}
+function wlist(){var ws=workers(),q=q2.trim().toLowerCase(),h="";
+ws.forEach(function(w,i){if(q&&w.name.toLowerCase().indexOf(q)<0)return;
+h+='<div class="item worker" onclick="tog('+i+')"><div class="who">'+av(w.name)+'<div><div class="n">'+esc(w.name)+'</div><small>'+wt(w.kg)+' · '+w.nd+' din</small></div></div><div class="rt"><div><div class="num">'+money(w.earn)+'</div><small class="num '+(w.bal>0?"pos":"ok")+'">Baqi '+money(w.bal)+'</small></div><span style="color:var(--mute)">'+ic(open===w.name?"chu":"chd",18)+'</span></div></div>'+(open===w.name?detV(w,i):"")});
+return h||'<div class="empty">'+(ws.length?"Is naam ka koi mazdoor nahi mila.":"Abhi koi data nahi.")+'</div>'}
+function sumV(t){
+var ws=workers();
+return '<div class="stats"><div><b>'+wt(Math.max(0,t.kg-S.sb))+'</b><span>Kul stock</span></div><div><b>'+money(t.earn)+'</b><span>Kul mazdoori</span></div><div><b class="ok">'+money(t.paid)+'</b><span>Ada kar chuke</span></div><div><b class="pos">'+money(t.bal)+'</b><span>Baqi dena</span></div></div>'
++'<button class="btn alt" style="margin:0 0 14px" onclick="repAll()">'+ic("file",20)+'Poora hisaab (PDF)</button>'
++'<div class="card"><h2>Sab ka hisaab</h2>'+(ws.length>5?'<div class="sr">'+ic("search",18)+'<input id="q2" placeholder="Naam dhundein" value="'+esc(q2)+'" oninput="q2=this.value;document.getElementById(\'wl\').innerHTML=wlist()"></div>':"")+'<div id="wl">'+wlist()+'</div></div>';
+}
+function detV(w,i){
+function row(l){var p=l.t==="p";return '<div class="lr"><span>'+fdate(l.d)+'</span><b class="'+(p?"ok":"")+'">'+(p?money(l.v):wt(l.v))+'</b>'+kbtn(l.t,l.id)+'</div>'}
+var ps=w.log.filter(function(l){return l.t==="p"}),es=w.log.filter(function(l){return l.t==="e"});
+return '<div class="det"><div class="row"><input id="pa" type="number" inputmode="numeric" placeholder="Payment Rs"><button class="btn alt" style="margin:0" onclick="pay('+i+')">'+ic("cash",18)+'Payment darj karein</button></div><div class="row" style="margin-top:8px"><button class="btn line" style="margin:0" onclick="ren('+i+')">'+ic("user",18)+'Naam badlein</button><button class="btn line" style="margin:0" onclick="rep('+i+')">'+ic("file",18)+'PDF hisaab</button></div>'
++'<div class="sh">Payments ('+ps.length+')</div>'+(ps.length?ps.map(row).join(""):'<div class="empty" style="padding:8px 0">Koi payment nahi</div>')
++'<div class="sh">Wazan ki entries ('+es.length+')</div>'+es.map(row).join("")+'</div>';
+}
+function tog(i){var w=workers()[i];open=open===w.name?null:w.name;render()}
+function histV(){
+var m={};S.entries.forEach(function(e){(m[e.date]=m[e.date]||[]).push(e)});
+var ds=Object.keys(m).sort().reverse();
+if(!ds.length)return '<div class="card"><div class="empty">Abhi koi history nahi.</div></div>';
+return ds.map(function(d){var es=m[d],tot=es.reduce(function(a,e){return a+e.kg},0);
+return '<div class="card"><h2>'+fdate(d)+' · '+wt(tot)+'</h2>'+es.map(function(e){return '<div class="item"><div class="who">'+av(e.name)+'<span class="n">'+esc(e.name)+'</span></div><div class="rt"><span class="num">'+fmt(e.kg)+' kg</span>'+kbtn("e",e.id)+'</div></div>'}).join("")+'</div>'}).join("");
+}
+async function shareOrSave(blob,name){
+try{var f=new File([blob],name,{type:blob.type});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});return true}}catch(e){if(e&&e.name==="AbortError")return false}
+var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();toast("File download ho gayi");return true}
+async function dl(){var data=JSON.stringify(S),name="kapas-backup-"+today()+".json";
+try{var c=window.claude?await claude.use("downloads"):null;if(c){await c.save({filename:name,data:data});return}}catch(e){return}
+shareOrSave(new Blob([data],{type:"application/json"}),name)}
+var stk=[],rdo=[],cb=null,pend=null,cur=null;
+function st(){return JSON.stringify([S.entries,S.pays,S.rate,S.sb,S.sbd])}
+function snap(){stk.push(st());if(stk.length>40)stk.shift();rdo=[]}
+function rs(j){var a=JSON.parse(j);S.entries=a[0];S.pays=a[1];S.rate=a[2];S.sb=a[3]||0;S.sbd=a[4]||"";save();render()}
+function undo(){if(!stk.length)return;rdo.push(st());rs(stk.pop());toast("Undo ho gaya")}
+function redo(){if(!rdo.length)return;stk.push(st());rs(rdo.pop());toast("Redo ho gaya")}
+function toast(m){var o=document.querySelector(".toast");if(o)o.remove();var d=document.createElement("div");d.className="toast";d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.classList.add("out");setTimeout(function(){d.remove()},220)},2200)}
+function mo(h){var re=!!(document.getElementById("mo")||document.getElementById("mo-out"));document.querySelectorAll("#mo,#mo-out").forEach(function(x){x.remove()});var d=document.createElement("div");d.className="mo"+(re?" nr":"");d.id="mo";d.innerHTML='<div class="mb">'+h+'</div>';d.onclick=function(e){if(e.target===d)cm()};document.body.appendChild(d)}
+function cm(){var d=document.getElementById("mo");if(d){d.id="mo-out";d.classList.add("out");setTimeout(function(){d.remove()},170)}}
+function yn(msg,lbl,fn){cb=fn;mo('<h2>'+msg+'</h2><button class="btn red" onclick="cm();cb()">'+lbl+'</button><button class="btn line" onclick="cm()">Nahi</button>')}
+function fixN(n){var ex=workers().filter(function(w){return w.name.toLowerCase()===n.toLowerCase()})[0];return ex?ex.name:n}
+function addE(){
+var n=document.getElementById("n").value.trim(),k=parseFloat(document.getElementById("k").value);
+if(!n||!(k>0)){toast("Naam aur sahi wazan likhein");return}
+n=fixN(n);var dp=S.entries.filter(function(e){return e.date===day&&e.name===n});
+if(dp.length){pend={n:n,k:k,last:dp[dp.length-1],sum:dp.reduce(function(a,e){return a+e.kg},0)};
+mo('<h2>"'+esc(n)+'" ki entry is tareekh par pehle se hai ('+fmt(pend.sum)+' kg)</h2><p>Kya karein?</p><button class="btn" onclick="dupDo(1)">Pehli entry mein '+fmt(k)+' kg jama karein</button><button class="btn alt" onclick="dupDo(2)">Alag entry add karein</button><button class="btn line" onclick="dupDo(0)">Dusra naam likhein</button>');return}
+snap();flashId=Date.now();S.entries.push({id:flashId,date:day,name:n,kg:k});save();render();setTimeout(function(){flashId=null},1600);toast("Entry add ho gayi");setTimeout(function(){document.getElementById("n").focus()},50);
+}
+function dupDo(m){cm();var p=pend;if(m===0){var e=document.getElementById("n");e.value="";e.focus();document.getElementById("sug").innerHTML=sugH("");return}
+snap();if(m===1)p.last.kg=Math.round((p.last.kg+p.k)*100)/100;else S.entries.push({id:Date.now(),date:day,name:p.n,kg:p.k});save();render();toast("Entry add ho gayi")}
+function rec(){var c=cur,L=c.t==="e"?S.entries:S.pays;return L.filter(function(q){return q.id===c.id})[0]}
+function act(i,l,call,cls){return '<button class="act '+(cls||"")+'" onclick="'+call+'">'+ic(i,20)+'<span>'+l+'</span></button>'}
+function menu(t,id){cur={t:t,id:id};var x=rec();if(!x)return;
+var s=esc(x.name)+' · '+(t==="e"?fmt(x.kg)+' kg':money(x.amt))+' · '+fdate(x.date);
+mo('<h2>'+(t==="e"?"Wazan ki entry":"Payment")+'</h2><p>'+s+'</p>'
++(t==="e"?act("scale","Wazan theek karein","fld('kg')"):act("cash","Payment theek karein","fld('amt')"))
++act("user","Naam theek karein","fld('name')")+act("cal","Tareekh badlein","fld('date')")+act("trash","Hata dein","delEd()","red")
++'<button class="btn line" style="margin-top:8px" onclick="cm()">Band karein</button>')}
+function fld(f){var x=rec();if(!x)return;cur.f=f;
+var T={kg:["Wazan theek karein","Wazan (kg)",x.kg,'type="number" inputmode="decimal" step="0.1"'],amt:["Payment theek karein","Raqam (Rs)",x.amt,'type="number" inputmode="numeric"'],name:["Naam theek karein","Naam",x.name,'type="text" autocomplete="off"'],date:["Tareekh badlein","Tareekh",x.date,'type="date"']}[f];
+mo('<h2>'+T[0]+'</h2><label>'+T[1]+'</label><input id="fv" '+T[3]+' value="'+esc(T[2])+'" onkeydown="if(event.key===\'Enter\')saveF()"><button class="btn" onclick="saveF()">'+ic("check",20)+'Save karein</button><button class="btn line" onclick="menu(cur.t,cur.id)">Wapas</button>');
+var e=document.getElementById("fv");if(e&&f!=="date")e.focus()}
+function saveF(){var x=rec(),f=cur.f,v=document.getElementById("fv").value.trim();if(!x)return;
+if(f==="kg"||f==="amt"){v=parseFloat(v);if(!(v>0)){toast("Sahi number likhein");return}}else if(!v){toast("Yeh khaali nahi ho sakta");return}
+snap();if(f==="kg")x.kg=v;else if(f==="amt")x.amt=v;else if(f==="name")x.name=fixN(v);else x.date=v;
+save();cm();render();toast("Theek ho gaya")}
+function delEd(){var c=cur;yn("Yeh "+(c.t==="e"?"entry":"payment")+" hata dein?","Haan, hata dein",function(){snap();if(c.t==="e")S.entries=S.entries.filter(function(q){return q.id!==c.id});else S.pays=S.pays.filter(function(q){return q.id!==c.id});save();render();toast("Hata di gayi. Undo se wapas aa sakti hai")})}
+function pay(i){var w=workers()[i],a=parseFloat(document.getElementById("pa").value);if(!(a>0)){toast("Sahi raqam likhein");return}
+snap();S.pays.push({id:Date.now(),date:today(),name:w.name,amt:a});save();render();toast("Payment darj ho gayi")}
+function setR(x){var r=parseFloat(x)/40;if(r>0){snap();S.rate=r;save();render()}}
+function ren(i){cur=workers()[i].name;mo('<h2>Naam badlein</h2><p>Agar naya naam kisi aur ka hai to dono ka hisaab jama ho jayega.</p><input id="rN" value="'+esc(cur)+'" onkeydown="if(event.key===\'Enter\')doRen()"><button class="btn" onclick="doRen()">'+ic("check",20)+'Save karein</button><button class="btn line" onclick="cm()">Band karein</button>')}
+function doRen(){var nn=document.getElementById("rN").value.trim();if(!nn)return;nn=fixN(nn);var o=cur;if(nn===o){cm();return}
+snap();S.entries.concat(S.pays).forEach(function(x){if(x.name===o)x.name=nn});open=nn;save();cm();render();toast("Naam badal gaya")}
+function loadJs(u){return new Promise(function(ok,no){var e=document.createElement("script");e.src=u;e.onload=ok;e.onerror=function(){no(new Error("load"))};document.head.appendChild(e)})}
+async function libs(){if(!window.html2canvas)await loadJs("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");if(!(window.jspdf&&window.jspdf.jsPDF))await loadJs("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")}
+function mn(kg){var m=Math.floor(kg/40+1e-9),r=Math.round((kg-m*40)*100)/100;return m+" man"+(r?" "+fmt(r)+" kg":"")}
+function pgH(body,n,tot){return '<div class="pg" style="position:relative;width:794px;height:1123px;padding:44px 44px 0;background:#fff;color:#14231b;font-family:Segoe UI,Noto Sans,Arial,sans-serif;overflow:hidden;box-sizing:border-box">'+body+'<div style="position:absolute;left:44px;right:44px;bottom:26px;display:flex;justify-content:space-between;font-size:11px;color:#6b7a71;border-top:1px solid #e4e2d8;padding-top:8px"><span>Kapas Hisaab · '+new Date().toLocaleDateString("en-GB")+'</span><span>Safha '+n+' / '+tot+'</span></div></div>'}
+function tblH(cols,rows,tot){
+var th=cols.map(function(c){return '<th style="text-align:'+c.a+';padding:9px 8px;background:#0f4c35;color:#fff;font-size:12px;font-weight:600">'+c.h+'</th>'}).join("");
+var tr=rows.map(function(r,i){return '<tr style="background:'+(i%2?"#f5f7f4":"#fff")+'">'+r.map(function(v,j){return '<td dir="auto" style="text-align:'+cols[j].a+';padding:7px 8px;font-size:12.5px;border-bottom:1px solid #e4e2d8;height:30px;box-sizing:border-box">'+v+'</td>'}).join("")+'</tr>'}).join("");
+var tt=tot?'<tr>'+tot.map(function(v,j){return '<td style="text-align:'+cols[j].a+';padding:10px 8px;font-size:13px;font-weight:700;background:#eaf1ec;border-top:2px solid #0f4c35">'+v+'</td>'}).join("")+'</tr>':"";
+return '<table style="width:100%;border-collapse:collapse"><thead><tr>'+th+'</tr></thead><tbody>'+tr+tt+'</tbody></table>'}
+function mkPdf(o){
+var cap1=o.cap1||17,cap2=28,chunks=[],i=0;
+chunks.push(o.rows.slice(0,cap1));i=cap1;
+while(i<o.rows.length){chunks.push(o.rows.slice(i,i+cap2));i+=cap2}
+var last=chunks[chunks.length-1];if(last.length>cap2-3&&chunks.length>1)chunks.push([]);
+var tot=chunks.length,html=chunks.map(function(ch,n){
+var isL=n===tot-1,head=n===0?
+'<div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0f4c35;padding-bottom:14px"><div><div style="font-size:12px;color:#6b7a71">Kapas Hisaab</div><div style="font-size:24px;font-weight:700;margin-top:2px" dir="auto">'+o.title+'</div><div style="font-size:13px;color:#6b7a71;margin-top:4px">'+o.sub+'</div></div><div style="text-align:right;font-size:12px;color:#6b7a71">Tareekh<br><b style="color:#14231b;font-size:14px">'+new Date().toLocaleDateString("en-GB")+'</b></div></div>'
++'<div style="display:flex;gap:10px;margin:16px 0 18px">'+o.sum.map(function(x){return '<div style="flex:1;border:1px solid #e4e2d8;border-radius:10px;padding:10px 12px;background:#f5f7f4"><div style="font-size:11px;color:#6b7a71">'+x[0]+'</div><div style="font-size:17px;font-weight:700;color:'+(x[2]||"#14231b")+';margin-top:2px">'+x[1]+'</div>'+(x[3]?'<div style="font-size:11px;color:#6b7a71">'+x[3]+'</div>':"")+'</div>'}).join("")+'</div>'
+:'<div style="font-size:12px;color:#6b7a71;border-bottom:1px solid #e4e2d8;padding-bottom:8px;margin-bottom:12px"><b dir="auto" style="color:#14231b">'+o.title+'</b> · '+o.sub+'</div>';
+return pgH(head+tblH(o.cols,ch,isL?o.tot:null)+(isL?'<div style="margin-top:34px;display:flex;justify-content:space-between;font-size:12px;color:#6b7a71"><div style="border-top:1px solid #6b7a71;padding-top:6px;width:200px">Dastakhat (Kisan)</div><div style="border-top:1px solid #6b7a71;padding-top:6px;width:200px">Dastakhat (Mazdoor)</div></div>':""),n+1,tot)}).join("");
+return html}
+async function pdfOut(o){
+mo('<h2>PDF ban rahi hai...</h2><p>Thora intezar karein</p>');
+var box=null;
+try{
+await libs();
+box=document.createElement("div");box.style.cssText="position:fixed;left:-10000px;top:0;width:794px";box.innerHTML=mkPdf(o);document.body.appendChild(box);
+if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+var pages=box.querySelectorAll(".pg"),pdf=new window.jspdf.jsPDF({unit:"mm",format:"a4",orientation:"portrait"});
+for(var i=0;i<pages.length;i++){var cv=await window.html2canvas(pages[i],{scale:2,backgroundColor:"#ffffff",logging:false});
+if(i)pdf.addPage();pdf.addImage(cv.toDataURL("image/jpeg",0.92),"JPEG",0,0,210,297)}
+var blob=pdf.output("blob");cm();
+var d=null;try{d=await claude.use("downloads")}catch(e){}
+if(d){try{await d.save({filename:o.file,data:blob});toast("PDF taiyar. WhatsApp par bhej sakte hain")}catch(e){if(!(e&&e.code==="declined"))toast("PDF save nahi hui")}}
+else{await shareOrSave(blob,o.file)}
+}catch(e){cm();toast("PDF nahi bani. Internet check karein aur dobara koshish karein")}
+if(box)box.remove()}
+function rep(i){var w=workers()[i],r=S.rate,run=0,rows=[],evs=[];
+S.entries.filter(function(e){return e.name===w.name}).forEach(function(e){evs.push({d:e.date,k:0,id:e.id,x:e})});
+S.pays.filter(function(p){return p.name===w.name}).forEach(function(p){evs.push({d:p.date,k:1,id:p.id,x:p})});
+evs.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:a.k-b.k||a.id-b.id});
+evs.forEach(function(v){if(v.k===0){run+=v.x.kg*r;rows.push([fdate(v.d),"Kapas ka wazan",fmt(v.x.kg)+" kg",money(v.x.kg*r),"",money(run)])}else{run-=v.x.amt;rows.push([fdate(v.d),"Payment ada ki","","",money(v.x.amt),money(run)])}});
+var ds=evs.length?fdate(evs[0].d)+" se "+fdate(evs[evs.length-1].d):"";
+pdfOut({file:"hisaab-"+w.name.replace(/[^\w؀-ۿ]+/g,"-")+"-"+today()+".pdf",title:esc(w.name),sub:"Mazdoor ka hisaab · "+ds+" · Rate Rs "+Math.round(r*40)+" per man (40 kg)",
+sum:[["Kul wazan",fmt(w.kg)+" kg","",mn(w.kg)],["Kul mazdoori",money(w.earn)],["Ada kar diye",money(w.paid),"#0f4c35"],["Baqi raqam",money(w.bal),w.bal>0?"#b3392f":"#0f4c35"]],
+cols:[{h:"Tareekh",a:"left"},{h:"Tafseel",a:"left"},{h:"Wazan",a:"right"},{h:"Jama (Rs)",a:"right"},{h:"Ada (Rs)",a:"right"},{h:"Baqi (Rs)",a:"right"}],
+rows:rows,tot:["Total","",fmt(w.kg)+" kg",money(w.earn),money(w.paid),money(w.bal)]})}
+function repAll(){var ws=workers(),t=totals();if(!ws.length){toast("Abhi koi data nahi");return}
+var rows=ws.map(function(w,i){return [i+1,esc(w.name),w.nd,fmt(w.kg)+' kg<div style="font-size:10px;color:#6b7a71">'+mn(w.kg)+'</div>',money(w.earn),money(w.paid),'<b style="color:'+(w.bal>0?"#b3392f":"#0f4c35")+'">'+money(w.bal)+'</b>']});
+var ds=S.entries.map(function(e){return e.date}).sort();
+pdfOut({file:"poora-hisaab-"+today()+".pdf",title:"Poora hisaab",sub:"Tamam mazdoor"+(ds.length?" · "+fdate(ds[0])+" se "+fdate(ds[ds.length-1]):"")+" · Rate Rs "+Math.round(S.rate*40)+" per man (40 kg)",cap1:14,
+sum:[["Maujooda stock",fmt(Math.max(0,t.kg-S.sb))+" kg","",mn(Math.max(0,t.kg-S.sb))],["Kul mazdoori",money(t.earn)],["Ada kar diye",money(t.paid),"#0f4c35"],["Baqi dena",money(t.bal),t.bal>0?"#b3392f":"#0f4c35"]],
+cols:[{h:"#",a:"left"},{h:"Naam",a:"left"},{h:"Din",a:"right"},{h:"Wazan",a:"right"},{h:"Mazdoori",a:"right"},{h:"Ada",a:"right"},{h:"Baqi",a:"right"}],
+rows:rows.map(function(r){r[3]=r[3];return r}),tot:["","Total",'',fmt(t.kg)+" kg",money(t.earn),money(t.paid),money(t.bal)]})}
+
+async function doPush(){if(!cloud.doc){toast("Cloud abhi available nahi");return}cloud.st="sync";setCl();var ok=await push();toast(ok?"Backup ho gaya":"Backup nahi hua, dobara koshish karein");render()}
+function takeData(x){snap();S.entries=x.entries;S.pays=x.pays;S.rate=x.rate;S.sb=x.sb;S.sbd=x.sbd;save();render()}
+async function fromCloud(){if(!cloud.doc){toast("Cloud abhi available nahi");return}
+try{var sn=await cloud.doc.get();if(!sn.exists){toast("Cloud mein data nahi mila");return}var x=norm(JSON.parse(sn.data().json));
+yn("Is phone ka data cloud wale data se badal dein?","Haan, badal dein",function(){takeData(x)})}catch(e){toast("Cloud se data nahi aaya")}}
+function restore(el){var f=el.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var x=norm(JSON.parse(rd.result));if(!x.entries.length&&!x.pays.length)throw 0;
+yn(x.entries.length+" entries wapas layein? Maujooda data badal jayega.","Haan, wapas layein",function(){takeData(x)})}catch(e){toast("Yeh sahi backup file nahi hai")}};rd.readAsText(f)}
+function setTh(t){S.theme=t;save();render()}
+function resetStock(){yn("Stock zero kar dein? Mazdoori ka hisaab nahi badlega.","Haan, stock zero",function(){snap();S.sb=totals().kg;S.sbd=today();save();render();toast("Stock zero ho gaya. Undo se wapas aa sakta hai")})}
+function clearReset(){snap();S.sb=0;S.sbd="";save();render();toast("Poora stock wapas dikh raha hai")}
+function resetAll(){yn("Poora data saaf kar dein?","Haan",function(){yn("Pakka? Saari entries aur payments mit jayengi.","Haan, pakka",function(){snap();S.entries=[];S.pays=[];S.sb=0;S.sbd="";save();render();toast("Data saaf. Undo se wapas aa sakta hai")})})}
+function bkV(){var t=totals(),ok=cloud.st==="ok"||cloud.st==="sync",
+msg=ok?(MODE==="fb"?"Aap ke Google account se jura hua data cloud mein mehfooz hai":"Data cloud mein mehfooz hai")+(cloud.last?" (aakhri backup "+cloud.last.toLocaleTimeString()+")":"")+". Har tabdeeli ke baad khud backup hota hai.":cloud.st==="off"?(MODE==="local"?"Cloud backup abhi setup nahi hua. Setup guide ke mutabiq firebase-config.js mein apni details bharein. Tab tak file backup lein.":"Cloud backup band hai. Claude mein sign in karke link dobara kholein aur Allow dabayein. Tab tak file backup lein."):cloud.st==="err"?"Cloud backup nahi hua. Internet check karein aur neeche button dabayein.":"Cloud check ho raha hai.";
+var th=[["auto","Auto","monitor"],["light","Light","sun"],["dark","Dark","moon"]].map(function(x){return '<button class="chip'+(S.theme===x[0]?" on":"")+'" onclick="setTh(\''+x[0]+'\')">'+ic(x[2],16)+x[1]+'</button>'}).join("");
+var acc=(MODE==="fb"&&user)?'<div class="card set"><h2>Account</h2><div class="who">'+av(user.displayName||user.email||"U")+'<div style="min-width:0"><div class="n" style="font-weight:600">'+esc(user.displayName||"")+'</div><small style="color:var(--mute);overflow-wrap:anywhere">'+esc(user.email||"")+'</small></div></div><button class="btn line" onclick="logout()">'+ic("out",20)+'Logout</button></div>':"";
+return acc+'<div class="card"><h2>Theme</h2>'+th+'</div>'
++'<div class="card set"><h2>Rate (Rs per man = 40 kg)</h2><input id="rt" type="number" inputmode="decimal" value="'+Math.round(S.rate*40)+'" onchange="setR(this.value)"><p style="margin-top:8px">Misaal: 1 man (40 kg) = Rs 1000. Rate badalne se sab ka hisaab naye rate par ban jata hai.</p></div>'
++'<div class="card set"><h2>Stock reset</h2><p>Abhi stock: <b style="color:var(--ink)">'+wt(Math.max(0,t.kg-S.sb))+'</b></p>'+(S.sb>0?'<p>Reset ('+fdate(S.sbd||today())+') se pehle ka wazan: '+wt(S.sb)+'. Mazdoori ka hisaab poore wazan par hai.</p>':'')+'<button class="btn alt" onclick="resetStock()">'+ic("reset",20)+'Stock zero karein</button>'+(S.sb>0?'<button class="btn line" onclick="clearReset()">Reset hata dein, poora stock dikhayein</button>':'')+'</div>'
++'<div class="card set"><h2>Cloud backup</h2><p>'+msg+'</p><button class="btn alt" onclick="doPush()">'+ic("up",20)+'Abhi cloud mein backup karein</button><button class="btn line" onclick="fromCloud()">'+ic("down",20)+'Cloud se data wapas layein</button></div>'
++'<div class="card set"><h2>File backup</h2><p>Hafte mein ek baar file download kar ke WhatsApp par apne aap ko bhej dein.</p><button class="btn" onclick="dl()">'+ic("down",20)+'Backup file download karein</button><label>Backup file se restore</label><input type="file" accept=".json,application/json" onchange="restore(this)"></div>'
++'<div class="card"><h2>Khatarnak hissa</h2><button class="btn red" style="margin-top:0" onclick="resetAll()">'+ic("trash",20)+'Poora data saaf karein</button></div>';
+}
+document.getElementById("nav").onclick=function(e){var b=e.target.closest("button");if(b&&b.dataset.t){tab=b.dataset.t;open=null;render();swap();window.scrollTo(0,0)}};
+document.getElementById("seg").onclick=function(e){var u=e.target.dataset.u;if(u){S.unit=u;ls();render()}};
+document.getElementById("cloud").onclick=function(){tab="bk";render();swap()};
+function haveCfg(){var c=window.FIREBASE_CONFIG;return !!(c&&c.apiKey&&c.projectId&&String(c.apiKey).indexOf("YOUR")<0)}
+function hideSplash(){var e=document.getElementById("splash");if(!e)return;e.classList.add("out");setTimeout(function(){e.remove()},400)}
+function showLogin(m){document.getElementById("login").style.display="flex";document.getElementById("lMsg").textContent=m||"";document.getElementById("gBtn").disabled=false}
+function hideLogin(){document.getElementById("login").style.display="none"}
+function errMsg(e){var c=(e&&e.code)||"";if(c==="auth/popup-closed-by-user"||c==="auth/cancelled-popup-request")return "Login band ho gaya. Dobara koshish karein.";if(c==="auth/network-request-failed")return "Internet check karein aur dobara koshish karein.";if(c==="auth/unauthorized-domain")return "Ye website Firebase ki Authorized domains mein shamil nahi. Setup guide dekhein.";return "Login nahi hua"+(c?" ("+c+")":"")+". Dobara koshish karein."}
+async function gLogin(){var b=document.getElementById("gBtn"),p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});b.disabled=true;document.getElementById("lMsg").textContent="";
+try{await auth.signInWithPopup(p)}catch(e){
+if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"){try{await auth.signInWithRedirect(p);return}catch(x){e=x}}
+showLogin(errMsg(e))}
+b.disabled=false}
+function startUser(u){var prev=null;try{prev=localStorage.getItem("kapas_uid")}catch(e){}
+if(prev&&prev!==u.uid){S=norm({});ls()}
+try{localStorage.setItem("kapas_uid",u.uid)}catch(e){}
+cloud.st="wait";setCl();attach(firebase.firestore().collection("users").doc(u.uid).collection("data").doc("hisaab"))}
+function logout(){yn("Logout karein? Aap ka data cloud mein mehfooz hai, dobara login karne par wapas aa jayega.","Haan, logout",async function(){
+toast("Backup ho raha hai...");var ok=await push();
+if(!ok){toast("Backup nahi hua, is liye logout nahi hua. Internet check karein.");return}
+try{localStorage.removeItem(KEY);localStorage.removeItem("kapas_uid")}catch(e){}
+S=norm({});stk=[];rdo=[];cloud.doc=null;try{await auth.signOut()}catch(e){}render()})}
+async function boot(){
+var t0=Date.now();
+document.getElementById("spArt").innerHTML=sprigSvg();document.getElementById("lgArt").innerHTML=sprigSvg();document.getElementById("lgBg").innerHTML=fieldSvg();
+await new Promise(function(r){setTimeout(r,0)});
+var fin=false;function done(){if(fin)return;fin=true;setTimeout(hideSplash,Math.max(0,900-(Date.now()-t0)))}
+if(window.claude){MODE="claude";done();initCloud();return}
+if(!haveCfg()){MODE="local";cloud.st="off";setCl();done();return}
+MODE="fb";
+var known=false;try{known=!!localStorage.getItem("kapas_uid")}catch(e){}
+window.addEventListener("online",function(){if(cloud.doc)push()});
+setTimeout(function(){if(!fin){if(known){cloud.st="err";setCl()}else showLogin("Internet nahi mila. Pehli dafa login ke liye internet chahiye.");done()}},9000);
+try{
+var base="https://www.gstatic.com/firebasejs/10.12.2/";
+await loadJs(base+"firebase-app-compat.js");await loadJs(base+"firebase-auth-compat.js");await loadJs(base+"firebase-firestore-compat.js");
+var cfg=Object.assign({},window.FIREBASE_CONFIG);
+if(/\.(web\.app|firebaseapp\.com)$/.test(location.hostname))cfg.authDomain=location.hostname;
+firebase.initializeApp(cfg);auth=firebase.auth();
+auth.getRedirectResult().catch(function(e){showLogin(errMsg(e))});
+auth.onAuthStateChanged(function(u){fin=false;if(u){user=u;hideLogin();startUser(u)}else{user=null;cloud.doc=null;cloud.st="off";setCl();showLogin("")}done();if(tab==="bk")render()});
+}catch(e){if(known){cloud.st="err";setCl()}else showLogin("Internet nahi mila. Pehli dafa login ke liye internet chahiye.");done()}
+}
+render();
+boot();
+if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)&&!window.claude){try{navigator.serviceWorker.register("sw.js").catch(function(){})}catch(e){}}
+</script>
+</body>
+</html>
