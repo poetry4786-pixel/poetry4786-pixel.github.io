@@ -1,6 +1,6 @@
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyDuQjOpBGMz_mIA8baMEsfdfH93kpwI1eY",
-  authDomain: "kapas-hisab.firebaseapp.com",
+  authDomain: "kapas-hisab.firebaseapp.com
   projectId: "kapas-hisab",
   storageBucket: "kapas-hisab.firebasestorage.app",
   messagingSenderId: "629419450746",
